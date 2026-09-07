@@ -1,41 +1,152 @@
-import { Navigate } from 'react-router-dom'
-import MainLayout from './layouts/MainLayout.jsx'
+// src/App.jsx
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { AssessmentProvider } from "./context/AssessmentContext";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import MainLayout from "./layouts/MainLayout";
 
-import Login from './pages/Login/Login.jsx'
-import Dashboard from './pages/Dashboard/Dashboard.jsx'
-import DataPeserta from './pages/DataPeserta/DataPeserta.jsx'
-import PetunjukPenilaian from './pages/PetunjukPenilaian/PetunjukPenilaian.jsx'
-import Assessment from './pages/Assessment/Assessment.jsx'
-import KategoriTechnicalSkill from './pages/KategoriTechnicalSkill/KategoriTechnicalSkill.jsx'
-import ReviewAssessment from './pages/ReviewAssessment/ReviewAssessment.jsx'
-import HasilAssessment from './pages/HasilAssessment/HasilAssessment.jsx'
-import RiwayatPenilaian from './pages/RiwayatPenilaian/RiwayatPenilaian.jsx'
-import PesertaMagang from './pages/PesertaMagang/PesertaMagang.jsx'
-import RekapNilai from './pages/RekapNilai/RekapNilai.jsx'
-import Profil from './pages/Profil/Profil.jsx'
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import DataPeserta from "./pages/DataPeserta";
+import PetunjukPenilaian from "./pages/PetunjukPenilaian";
+import Assessment from "./pages/Assessment";
+import ReviewAssessment from "./pages/ReviewAssessment";
+import Persetujuan from "./pages/Persetujuan";
+import HasilAssessment from "./pages/HasilAssessment";
+import HasilPenilaianSaya from "./pages/HasilPenilaianSaya";
+import RiwayatPenilaian from "./pages/RiwayatPenilaian";
+import RekapNilai from "./pages/RekapNilai";
+import DetailPenilaian from "./pages/DetailPenilaian";
+import PesertaMagang from "./pages/PesertaMagang";
+import FeedbackSaya from "./pages/FeedbackSaya";
+import FeedbackPeserta from "./pages/FeedbackPeserta";
 
-export const routes = [
-  // 1. Halaman Login — tanpa sidebar/navbar
-  { path: '/login', element: <Login /> },
+function Unauthorized() {
+  return (
+    <div className="p-10 text-center">
+      <h1 className="text-xl font-semibold text-red-700">Akses Ditolak</h1>
+      <p className="text-neutral-500 mt-2">
+        Kamu tidak punya izin untuk membuka halaman ini.
+      </p>
+    </div>
+  );
+}
 
-  // Semua halaman lain memakai MainLayout (sidebar + navbar)
-  {
-    element: <MainLayout />,
-    children: [
-      { path: '/', element: <Navigate to="/dashboard" replace /> },
-      { path: '/dashboard', element: <Dashboard />, handle: { title: 'Dashboard' } },
-      { path: '/penilaian/data-peserta', element: <DataPeserta />, handle: { title: 'Data Peserta' } },
-      { path: '/penilaian/petunjuk', element: <PetunjukPenilaian />, handle: { title: 'Petunjuk Penilaian' } },
-      { path: '/penilaian/assessment', element: <Assessment />, handle: { title: 'Assessment' } },
-      { path: '/penilaian/technical-skill', element: <KategoriTechnicalSkill />, handle: { title: 'Technical Skill' } },
-      { path: '/penilaian/review', element: <ReviewAssessment />, handle: { title: 'Review Assessment' } },
-      { path: '/penilaian/hasil/:pesertaId', element: <HasilAssessment />, handle: { title: 'Hasil Assessment' } },
-      { path: '/riwayat-penilaian', element: <RiwayatPenilaian />, handle: { title: 'Riwayat Penilaian' } },
-      { path: '/peserta-magang', element: <PesertaMagang />, handle: { title: 'Peserta Magang' } },
-      { path: '/rekap-nilai', element: <RekapNilai />, handle: { title: 'Rekap Nilai' } },
-      { path: '/profil', element: <Profil />, handle: { title: 'Profil' } },
-    ],
-  },
+export default function App() {
+  return (
+    <AuthProvider>
+      <AssessmentProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
 
-  { path: '*', element: <Navigate to="/dashboard" replace /> },
-]
+            <Route
+              element={
+                <ProtectedRoute>
+                  <MainLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profil" element={<div>Halaman Profil (placeholder)</div>} />
+
+              <Route
+                path="/peserta"
+                element={
+                  <ProtectedRoute allowedRoles={["supervisor", "general_manager"]}>
+                    <PesertaMagang />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Alur penilaian: hanya Supervisor */}
+              <Route
+                path="/data-peserta-magang"
+                element={
+                  <ProtectedRoute allowedRoles={["supervisor"]}>
+                    <DataPeserta />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/petunjuk-penilaian"
+                element={
+                  <ProtectedRoute allowedRoles={["supervisor"]}>
+                    <PetunjukPenilaian />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/penilaian"
+                element={
+                  <ProtectedRoute allowedRoles={["supervisor"]}>
+                    <Assessment />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/review-assessment"
+                element={
+                  <ProtectedRoute allowedRoles={["supervisor"]}>
+                    <ReviewAssessment />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/hasil-assessment"
+                element={
+                  <ProtectedRoute allowedRoles={["supervisor"]}>
+                    <HasilAssessment />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/persetujuan"
+                element={
+                  <ProtectedRoute allowedRoles={["general_manager"]}>
+                    <Persetujuan />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/hasil-saya"
+                element={
+                  <ProtectedRoute allowedRoles={["trainee"]}>
+                    <HasilPenilaianSaya />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/feedback-saya"
+                element={
+                  <ProtectedRoute allowedRoles={["trainee"]}>
+                    <FeedbackSaya />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/feedback-peserta"
+                element={
+                  <ProtectedRoute allowedRoles={["supervisor", "general_manager"]}>
+                    <FeedbackPeserta />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="/riwayat" element={<RiwayatPenilaian />} />
+              <Route path="/detail-penilaian/:id" element={<DetailPenilaian />} />
+              <Route path="/rekap" element={<RekapNilai />} />
+            </Route>
+
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AssessmentProvider>
+    </AuthProvider>
+  );
+}
