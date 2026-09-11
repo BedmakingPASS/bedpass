@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev
 export default defineConfig({
   plugins: [react()],
-  base: '/WebsitePertama/', // <--- Tambahkan baris ini (sesuai nama repository GitHub Anda)
+  base: '/', // Tambahkan baris ini agar path file aset (.js / .css) tidak rusak saat online
+  server: {
+    port: 5173,
+    open: true,
+  },
 })
