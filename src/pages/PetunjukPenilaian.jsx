@@ -7,7 +7,7 @@ const petunjuk = [
   "Berikan skor 1 sampai 4 sesuai dengan deskriptor kinerja.",
   "Nilai berdasarkan bukti yang teramati, bukan asumsi.",
   "Isi catatan penilai jika diperlukan.",
-  "Pastikan seluruh aspek sudah dinilai sebelum menyimpan assessment.",
+  "Pastikan seluruh aspek sudah dinilai sebelum menyimpan penilaian.",
 ];
 
 export default function PetunjukPenilaian() {

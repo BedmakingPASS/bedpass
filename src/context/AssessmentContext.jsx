@@ -62,7 +62,6 @@ export function AssessmentProvider({ children }) {
     setRiwayatPenilaian(formatted);
   };
 
-  // BARU: ambil semua feedback dari peserta
   const ambilDaftarFeedback = async () => {
     const { data, error } = await supabase
       .from("feedback_peserta")
@@ -199,8 +198,38 @@ export function AssessmentProvider({ children }) {
 
     await ambilRiwayatPenilaian();
   };
+    const hapusPenilaian = async (id) => {
+    const { error } = await supabase.from("penilaian").delete().eq("id", id);
 
-  // BARU: simpan atau update feedback milik seorang peserta (1 peserta = 1 feedback)
+    if (error) {
+      console.error("Gagal hapus penilaian:", error.message);
+      alert("Gagal menghapus data: " + error.message);
+      return;
+    }
+
+    await ambilRiwayatPenilaian();
+  };
+    const hapusPeserta = async (pesertaId) => {
+    // Hapus berurutan: feedback -> akun login -> semua riwayat penilaian -> peserta itu sendiri
+    await supabase.from("feedback_peserta").delete().eq("peserta_id", pesertaId);
+    await supabase.from("akun_peserta").delete().eq("peserta_id", pesertaId);
+    await supabase.from("penilaian").delete().eq("peserta_id", pesertaId);
+
+    const { error } = await supabase.from("peserta").delete().eq("id", pesertaId);
+
+    if (error) {
+      console.error("Gagal hapus peserta:", error.message);
+      alert("Gagal menghapus peserta: " + error.message);
+      return;
+    }
+
+    await Promise.all([
+      ambilDaftarPeserta(),
+      ambilRiwayatPenilaian(),
+      ambilDaftarFeedback(),
+    ]);
+  };
+
   const simpanFeedback = async (pesertaId, namaPeserta, isiFeedback) => {
     const existing = daftarFeedback.find(
       (f) => f.nama_peserta === namaPeserta
@@ -236,6 +265,45 @@ export function AssessmentProvider({ children }) {
     return data[0];
   };
 
+  // BARU: tambah peserta baru sekaligus buat akun login otomatis
+  const tambahPeserta = async (nama, instansi, username, password) => {
+    // 1. Cek dulu username belum dipakai
+    const { data: existingAkun } = await supabase
+      .from("akun_peserta")
+      .select("id")
+      .eq("username", username)
+      .maybeSingle();
+
+    if (existingAkun) {
+      throw new Error("Username sudah dipakai peserta lain. Gunakan username lain.");
+    }
+
+    // 2. Insert peserta baru
+    const { data: pesertaBaru, error: errorPeserta } = await supabase
+      .from("peserta")
+      .insert({ nama, instansi })
+      .select()
+      .single();
+
+    if (errorPeserta) {
+      throw new Error("Gagal menambah peserta: " + errorPeserta.message);
+    }
+
+    // 3. Insert akun login untuk peserta itu
+    const { error: errorAkun } = await supabase.from("akun_peserta").insert({
+      peserta_id: pesertaBaru.id,
+      username,
+      password,
+    });
+
+    if (errorAkun) {
+      throw new Error("Gagal membuat akun login: " + errorAkun.message);
+    }
+
+    await ambilDaftarPeserta();
+    return pesertaBaru;
+  };
+
   const value = {
     pesertaTerpilih,
     currentIndex,
@@ -254,8 +322,11 @@ export function AssessmentProvider({ children }) {
     riwayatPenilaian,
     submitPenilaian,
     updateStatusPenilaian,
+    hapusPenilaian,
+    hapusPeserta,
     daftarFeedback,
     simpanFeedback,
+    tambahPeserta,
   };
 
   return (

@@ -1,33 +1,13 @@
 // src/pages/Assessment.jsx
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAssessment } from "../context/AssessmentContext";
-import { skorLabel } from "../data/assessmentAspects";
+import { assessmentAspects, skorLabel } from "../data/assessmentAspects";
+
+const kategoriList = ["Hard Skill", "Soft Skill", "Technical Skill"];
 
 export default function Assessment() {
-  const {
-    pesertaTerpilih,
-    currentIndex,
-    aspekSaatIni,
-    totalAspek,
-    jawaban,
-    simpanJawaban,
-    nextAspek,
-    prevAspek,
-  } = useAssessment();
+  const { pesertaTerpilih, jawaban, simpanJawaban, hitungHasil } = useAssessment();
   const navigate = useNavigate();
-
-  const [skor, setSkor] = useState(null);
-  const [catatan, setCatatan] = useState("");
-
-  // Setiap pindah aspek, ambil ulang jawaban yang sudah pernah diisi (kalau ada)
-  useEffect(() => {
-    if (aspekSaatIni) {
-      const existing = jawaban[aspekSaatIni.id];
-      setSkor(existing?.skor ?? null);
-      setCatatan(existing?.catatan ?? "");
-    }
-  }, [aspekSaatIni, jawaban]);
 
   if (!pesertaTerpilih) {
     return (
@@ -46,115 +26,140 @@ export default function Assessment() {
     );
   }
 
-  const handleBerikutnya = () => {
-    if (!skor) {
-      alert("Pilih skor terlebih dahulu");
+  const totalTerisi = Object.keys(jawaban).length;
+  const totalAspek = assessmentAspects.length;
+  const semuaTerisi = totalTerisi === totalAspek;
+
+  const hasil = hitungHasil();
+
+  const handlePilihSkor = (aspekId, skor) => {
+    simpanJawaban(aspekId, skor, "");
+  };
+
+  const handleLanjut = () => {
+    if (!semuaTerisi) {
+      alert(
+        `Masih ada ${totalAspek - totalTerisi} aspek yang belum dinilai. Silakan lengkapi dulu.`
+      );
       return;
     }
-    simpanJawaban(aspekSaatIni.id, skor, catatan);
-
-    if (currentIndex === totalAspek - 1) {
-      navigate("/review-assessment");
-    } else {
-      nextAspek();
-    }
+    navigate("/review-assessment");
   };
-
-  const handleSebelumnya = () => {
-    if (skor) simpanJawaban(aspekSaatIni.id, skor, catatan);
-    prevAspek();
-  };
-
-  const progress = ((currentIndex + 1) / totalAspek) * 100;
 
   return (
-    <div className="max-w-3xl">
-      <div className="flex items-center justify-between mb-2">
+    <div className="max-w-3xl pb-28">
+      <div className="mb-4">
         <h1 className="text-lg font-semibold text-sky-900">
           Assessment Making Bed
         </h1>
-        <span className="text-sm font-medium text-sky-800">
-          {aspekSaatIni.kategori}
-        </span>
+        <p className="text-sm text-neutral-500">
+          {pesertaTerpilih.nama} · {pesertaTerpilih.instansi}
+        </p>
       </div>
 
       <div className="flex items-center gap-3 mb-6">
         <div className="flex-1 h-2 bg-neutral-200 rounded-full overflow-hidden">
           <div
             className="h-full bg-sky-700 transition-all"
-            style={{ width: `${progress}%` }}
+            style={{ width: `${(totalTerisi / totalAspek) * 100}%` }}
           />
         </div>
         <span className="text-xs text-neutral-500 whitespace-nowrap">
-          {currentIndex + 1} / {totalAspek} Aspek
+          {totalTerisi} / {totalAspek} Aspek
         </span>
       </div>
-
-      <div className="bg-white rounded-xl border p-6">
-        <p className="text-lg font-semibold text-sky-800 mb-1">
-          {String(currentIndex + 1).padStart(2, "0")}. {aspekSaatIni.judul}
-        </p>
-        <p className="text-sm text-neutral-500 mb-5">
-          {aspekSaatIni.deskripsi}
-        </p>
-
-        <div className="grid grid-cols-4 gap-3 mb-5">
-          {[4, 3, 2, 1].map((nilai) => (
-            <button
-              key={nilai}
-              onClick={() => setSkor(nilai)}
-              className={`rounded-xl border-2 py-4 text-center transition-colors ${
-                skor === nilai
-                  ? "border-sky-700 bg-sky-50"
-                  : "border-neutral-200 hover:border-neutral-300"
-              }`}
-            >
-              <p className="text-2xl font-bold text-neutral-800">{nilai}</p>
-              <p className="text-xs text-neutral-500 mt-1">
-                {skorLabel[nilai]}
-              </p>
-            </button>
-          ))}
-        </div>
-
-        {skor && (
-          <div className="bg-sky-50 rounded-lg p-3 mb-5">
-            <p className="text-xs font-medium text-sky-800 mb-1">
-              Deskriptor Skor {skor} ({skorLabel[skor]})
-            </p>
-            <p className="text-xs text-sky-700">
-              {aspekSaatIni.deskriptor[skor]}
-            </p>
-          </div>
-        )}
-
-        <div>
-          <label className="block text-sm text-neutral-600 mb-1">
-            Catatan Penilai (Opsional)
-          </label>
-          <textarea
-            value={catatan}
-            onChange={(e) => setCatatan(e.target.value)}
-            rows={3}
-            placeholder="Tulis catatan di sini..."
-            className="w-full rounded-lg border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-700"
-          />
-        </div>
+            <div className="flex items-center gap-4 mb-6 bg-white rounded-lg border px-4 py-3 flex-wrap">
+        <span className="text-xs text-neutral-400">Keterangan skor:</span>
+        {[4, 3, 2, 1].map((nilai) => (
+          <span key={nilai} className="flex items-center gap-1.5 text-xs text-neutral-600">
+            <span className="h-5 w-5 rounded-md bg-sky-700 text-white flex items-center justify-center font-semibold text-[11px]">
+              {nilai}
+            </span>
+            {skorLabel[nilai]}
+          </span>
+        ))}
       </div>
 
-      <div className="flex justify-between mt-4">
+      {kategoriList.map((kategori) => (
+        <div key={kategori} className="mb-6">
+          <p className="text-sm font-semibold text-sky-800 mb-2">
+            {kategori}
+          </p>
+          <div className="bg-white rounded-xl border divide-y">
+            {assessmentAspects
+              .filter((a) => a.kategori === kategori)
+              .map((aspek) => {
+                const skorTerpilih = jawaban[aspek.id]?.skor;
+                return (
+                  <div
+                    key={aspek.id}
+                    className="p-4 flex items-center justify-between gap-4"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-neutral-700">
+                        {String(aspek.id).padStart(2, "0")}. {aspek.judul}
+                      </p>
+                      <p className="text-xs text-neutral-400 mt-0.5">
+                        {aspek.deskripsi}
+                      </p>
+                    </div>
+                    <div className="flex gap-1.5 shrink-0">
+                      {[1, 2, 3, 4].map((nilai) => (
+                        <button
+                          key={nilai}
+                          onClick={() => handlePilihSkor(aspek.id, nilai)}
+                          title={skorLabel[nilai]}
+                          className={`h-9 w-9 rounded-lg border-2 text-sm font-semibold transition-colors ${
+                            skorTerpilih === nilai
+                              ? "border-sky-700 bg-sky-700 text-white"
+                              : "border-neutral-200 text-neutral-600 hover:border-sky-300"
+                          }`}
+                        >
+                          {nilai}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      ))}
+
+      {/* Bar total skor & submit, selalu terlihat di bawah */}
+      <div className="fixed bottom-0 left-0 md:left-60 right-0 bg-white border-t shadow-lg px-6 py-4 flex items-center justify-between z-30">
+        <div className="flex items-center gap-6">
+          <div>
+            <p className="text-xs text-neutral-400">Total Skor</p>
+            <p className="text-lg font-bold text-sky-900">
+              {hasil.totalSkor} / {hasil.maksimalSkor}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-neutral-400">Nilai Akhir</p>
+            <p className="text-lg font-bold text-sky-900">
+              {hasil.persentase}
+            </p>
+          </div>
+          {totalTerisi > 0 && (
+            <span
+              className={`text-xs font-medium px-3 py-1.5 rounded-full ${
+                hasil.status === "Kompeten"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : hasil.status === "Belum Kompeten"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {hasil.status}
+            </span>
+          )}
+        </div>
         <button
-          onClick={handleSebelumnya}
-          disabled={currentIndex === 0}
-          className="px-5 py-2.5 rounded-lg border border-neutral-300 text-sm font-medium text-neutral-600 disabled:opacity-40 hover:bg-neutral-50"
+          onClick={handleLanjut}
+          className="px-6 py-2.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium"
         >
-          ← Sebelumnya
-        </button>
-        <button
-          onClick={handleBerikutnya}
-          className="px-5 py-2.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium"
-        >
-          {currentIndex === totalAspek - 1 ? "Selesai →" : "Berikutnya →"}
+          Lanjut ke Review →
         </button>
       </div>
     </div>

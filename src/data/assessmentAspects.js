@@ -9,7 +9,7 @@ export const assessmentAspects = [
   {
     id: 1,
     kategori: "Hard Skill",
-    judul: "Kelengkapan Peralatan Kerja Awal",
+    judul: "Kelengkapan Peralatan Kerja",
     deskripsi:
       "Menilai kelengkapan dan kesiapan perlengkapan, bahan, dan dokumen kerja sebelum memulai tugas.",
     deskriptor: {

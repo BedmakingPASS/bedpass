@@ -1,20 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{js,jsx}'],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
-      colors: {
-        cba: {
-          dark: '#1F3A2E',    // sidebar / primary dark green
-          DEFAULT: '#2E5B44', // primary green (buttons)
-          light: '#E8EFE8',   // light backgrounds
-          cream: '#F6F3EC',   // page background
-          gold: '#C9A24B',    // status "Baik/Kompeten" accent
+      keyframes: {
+        zoomSlow: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.1)' },
         },
       },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        serif: ['"Cormorant Garamond"', 'serif'],
+      animation: {
+        'zoom-slow': 'zoomSlow 12s ease-in-out infinite',
       },
     },
   },

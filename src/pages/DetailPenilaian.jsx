@@ -94,12 +94,18 @@ export default function DetailPenilaian() {
           Detail Hasil Penilaian
         </h1>
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleDownloadPdf}
-            className="text-sm px-4 py-2 rounded-lg border border-sky-300 text-sky-800 hover:bg-sky-50 font-medium"
-          >
-            Download PDF
-          </button>
+          {data.status === "Disetujui" ? (
+            <button
+              onClick={handleDownloadPdf}
+              className="text-sm px-4 py-2 rounded-lg border border-sky-300 text-sky-800 hover:bg-sky-50 font-medium"
+            >
+              Download PDF
+            </button>
+          ) : (
+            <span className="text-xs text-neutral-400 italic">
+              PDF tersedia setelah disetujui GM
+            </span>
+          )}
           <span
             className={`text-xs font-medium px-3 py-1.5 rounded-full ${
               statusApprovalColorMap[data.status] || "bg-neutral-100 text-neutral-600"

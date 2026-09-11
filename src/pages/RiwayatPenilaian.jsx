@@ -12,7 +12,7 @@ const statusApprovalColor = {
 };
 
 export default function RiwayatPenilaian() {
-  const { riwayatPenilaian, mulaiEditPenilaian } = useAssessment();
+   const { riwayatPenilaian, mulaiEditPenilaian, hapusPenilaian } = useAssessment();
   const { role } = useAuth();
   const navigate = useNavigate();
   const [pencarian, setPencarian] = useState("");
@@ -34,6 +34,15 @@ export default function RiwayatPenilaian() {
       navigate("/penilaian");
     } else {
       alert("Gagal memuat data untuk diedit. Coba refresh halaman.");
+    }
+  };
+    const handleHapus = async (e, id, namaPeserta) => {
+    e.stopPropagation();
+    const konfirmasi = window.confirm(
+      `Yakin mau hapus riwayat penilaian ${namaPeserta}? Data yang sudah dihapus tidak bisa dikembalikan.`
+    );
+    if (konfirmasi) {
+      await hapusPenilaian(id);
     }
   };
 
@@ -75,6 +84,7 @@ export default function RiwayatPenilaian() {
               <th className="px-5 py-3 font-medium">Nilai</th>
               <th className="px-5 py-3 font-medium">Status</th>
               <th className="px-5 py-3 font-medium">Persetujuan</th>
+              <th className="px-5 py-3 font-medium"></th>
               <th className="px-5 py-3 font-medium"></th>
             </tr>
           </thead>
@@ -129,6 +139,16 @@ export default function RiwayatPenilaian() {
                         className="text-xs font-medium px-3 py-1.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white"
                       >
                         Edit & Ajukan Ulang
+                      </button>
+                    )}
+                  </td>
+                  <td className="px-5 py-3">
+                    {role === "supervisor" && (
+                      <button
+                        onClick={(e) => handleHapus(e, item.id, item.peserta.nama)}
+                        className="text-xs font-medium px-3 py-1.5 rounded-lg border border-red-300 text-red-600 hover:bg-red-50"
+                      >
+                        Hapus
                       </button>
                     )}
                   </td>

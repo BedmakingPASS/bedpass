@@ -41,8 +41,12 @@ export default function Login() {
           alt="New Hemangini Hotel"
           className="absolute top-14 left-12 h-28 w-auto z-20 drop-shadow-lg"
         />
-        <div className="relative z-8 p-10 pt-40 h-full flex flex-col justify-start text-white">
-          <p className="text-3xl font-light leading-snug max-w-xs">
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-950/60 via-sky-950/30 to-sky-950/70"></div>
+        <div className="relative z-8 p-10 pt-52 h-full flex flex-col justify-start text-white">
+          <p
+            className="text-2xl font-light leading-snug max-w-xs"
+            style={{ textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}
+          >
             Assess Skills
             <br />
             Measure Performance

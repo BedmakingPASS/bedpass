@@ -20,6 +20,8 @@ import DetailPenilaian from "./pages/DetailPenilaian";
 import PesertaMagang from "./pages/PesertaMagang";
 import FeedbackSaya from "./pages/FeedbackSaya";
 import FeedbackPeserta from "./pages/FeedbackPeserta";
+import TambahPeserta from "./pages/TambahPeserta";
+
 
 function Unauthorized() {
   return (
@@ -133,6 +135,14 @@ export default function App() {
                 element={
                   <ProtectedRoute allowedRoles={["supervisor", "general_manager"]}>
                     <FeedbackPeserta />
+                  </ProtectedRoute>
+                }
+              />
+                            <Route
+                path="/tambah-peserta"
+                element={
+                  <ProtectedRoute allowedRoles={["supervisor"]}>
+                    <TambahPeserta />
                   </ProtectedRoute>
                 }
               />

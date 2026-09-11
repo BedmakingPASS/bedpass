@@ -3,13 +3,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAssessment } from "../context/AssessmentContext";
 import { statusColor } from "../data/mockAssessments";
+import { useAuth } from "../context/AuthContext";
 
 export default function PesertaMagang() {
-  const { daftarPeserta, riwayatPenilaian } = useAssessment();
+  const { daftarPeserta, riwayatPenilaian, hapusPeserta } = useAssessment();
+  const { role } = useAuth();
   const navigate = useNavigate();
   const [pencarian, setPencarian] = useState("");
 
-  // Cari penilaian TERBARU untuk setiap peserta (riwayatPenilaian sudah terurut dari yang terbaru)
   const getPenilaianTerakhir = (namaPeserta) => {
     return riwayatPenilaian.find((item) => item.peserta.nama === namaPeserta);
   };
@@ -17,12 +18,29 @@ export default function PesertaMagang() {
   const hasilFilter = daftarPeserta.filter((p) =>
     p.nama.toLowerCase().includes(pencarian.toLowerCase())
   );
+    const handleHapus = async (e, peserta) => {
+    e.stopPropagation();
+    const konfirmasi = window.confirm(
+      `Yakin mau hapus peserta "${peserta.nama}"? Semua riwayat penilaian, akun login, dan feedback milik peserta ini akan ikut terhapus permanen.`
+    );
+    if (konfirmasi) {
+      await hapusPeserta(peserta.id);
+    }
+  };
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-sky-900 mb-1">
-        Peserta Magang
-      </h1>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-xl font-semibold text-sky-900">Peserta Magang</h1>
+        {role === "supervisor" && (
+          <button
+            onClick={() => navigate("/tambah-peserta")}
+            className="px-4 py-2 rounded-lg bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium"
+          >
+            + Tambah Peserta
+          </button>
+        )}
+      </div>
       <p className="text-neutral-500 text-sm mb-6">
         Daftar seluruh peserta magang yang terdaftar dalam sistem.
       </p>
@@ -44,6 +62,7 @@ export default function PesertaMagang() {
               <th className="px-5 py-3 font-medium">Penilaian Terakhir</th>
               <th className="px-5 py-3 font-medium">Nilai</th>
               <th className="px-5 py-3 font-medium">Status</th>
+              <th className="px-5 py-3 font-medium"></th>
             </tr>
           </thead>
           <tbody>
@@ -94,6 +113,14 @@ export default function PesertaMagang() {
                           Belum dinilai
                         </span>
                       )}
+                    </td>
+                    <td className="px-5 py-3">
+                      <button
+                        onClick={(e) => handleHapus(e, peserta)}
+                        className="text-xs font-medium px-3 py-1.5 rounded-lg border border-red-300 text-red-600 hover:bg-red-50"
+                      >
+                        Hapus
+                      </button>
                     </td>
                   </tr>
                 );
