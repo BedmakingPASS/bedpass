@@ -35,7 +35,7 @@ export default function Login() {
         <img
           src={heroRoom}
           alt="Hotel room"
-          className="absolute inset-0 h-full w-full object-cover opacity-90 animate-zoom-slow"
+          className="absolute inset-0 h-full w-full object-cover opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-sky-950/60 via-sky-950/30 to-sky-950/70"></div>
         <img
