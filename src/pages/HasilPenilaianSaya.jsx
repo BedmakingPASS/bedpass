@@ -16,7 +16,7 @@ export default function HasilPenilaianSaya() {
   const navigate = useNavigate();
 
   const hasilSaya = riwayatPenilaian.filter(
-    (item) => item.peserta.nama === user.name
+    (item) => item.peserta.nama === user.name && item.status === "Disetujui"
   );
 
   return (
