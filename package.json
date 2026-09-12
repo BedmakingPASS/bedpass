@@ -2,7 +2,7 @@
   "name": "cba-making-bed",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://hannanazhifarp-code.github.io/WebsitePertama", 
+  "homepage": "https://hannanazhifarp-code.github.io/bedpass",
   "type": "module",
   "scripts": {
     "dev": "vite",

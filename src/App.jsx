@@ -38,7 +38,7 @@ export default function App() {
   return (
     <AuthProvider>
       <AssessmentProvider>
-          <BrowserRouter basename="/WebsitePertama">
+<BrowserRouter basename="/bedpass">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
