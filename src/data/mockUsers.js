@@ -7,14 +7,14 @@ export const mockUsers = [
     username: "gm1",
     password: "gm123",
     role: "general_manager",
-    name: "Budi Santoso",
+    name: "Lety Latifah",
   },
   {
     id: 2,
     username: "supervisor1",
     password: "super123",
     role: "supervisor",
-    name: "Siti Aminah",
+    name: "Galih Saputra",
   },
   {
     id: 3,

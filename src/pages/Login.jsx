@@ -29,20 +29,21 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
-      <div className="relative hidden md:block bg-sky-950">
+    <div className="relative min-h-screen md:grid md:grid-cols-2">
+      {/* Foto: full background di mobile, sisi kiri saja di desktop */}
+      <div className="fixed md:relative inset-0 md:inset-auto md:block bg-sky-950">
         <img
           src={heroRoom}
           alt="Hotel room"
-          className="absolute inset-0 h-full w-full object-cover opacity-90"
+          className="absolute inset-0 h-full w-full object-cover opacity-90 animate-zoom-slow"
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-950/60 via-sky-950/30 to-sky-950/70"></div>
         <img
           src={logoHemangini}
           alt="New Hemangini Hotel"
-          className="absolute top-14 left-12 h-28 w-auto z-20 drop-shadow-lg"
+          className="absolute top-14 left-12 h-28 w-auto z-20 drop-shadow-lg hidden md:block"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-950/60 via-sky-950/30 to-sky-950/70"></div>
-        <div className="relative z-8 p-10 pt-52 h-full flex flex-col justify-start text-white">
+        <div className="relative z-8 p-10 pt-52 h-full flex-col justify-start text-white hidden md:flex">
           <p
             className="text-2xl font-light leading-snug max-w-xs"
             style={{ textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}
@@ -56,8 +57,9 @@ export default function Login() {
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center px-8 py-12 bg-white">
-        <div className="w-full max-w-sm">
+      {/* Form: card mengambang transparan di mobile, panel putih penuh di desktop */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-12 md:bg-white">
+        <div className="w-full max-w-sm bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:bg-transparent md:shadow-none md:backdrop-blur-none md:p-0">
           <div className="text-center mb-8">
             <img
               src={logoBedpass}
