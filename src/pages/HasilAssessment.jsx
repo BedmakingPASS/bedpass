@@ -48,14 +48,8 @@ export default function HasilAssessment() {
 
   return (
     <div className="max-w-2xl">
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4">
         <h1 className="text-xl font-semibold text-sky-900">Hasil Assessment</h1>
-        <button
-          onClick={() => window.print()}
-          className="text-sm px-4 py-2 rounded-lg border border-neutral-300 hover:bg-neutral-50"
-        >
-          Cetak
-        </button>
       </div>
 
       <div className="bg-white rounded-xl border p-6">
