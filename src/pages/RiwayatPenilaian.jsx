@@ -12,7 +12,7 @@ const statusApprovalColor = {
 };
 
 export default function RiwayatPenilaian() {
-   const { riwayatPenilaian, mulaiEditPenilaian, hapusPenilaian } = useAssessment();
+  const { riwayatPenilaian, mulaiEditPenilaian, hapusPenilaian } = useAssessment();
   const { role } = useAuth();
   const navigate = useNavigate();
   const [pencarian, setPencarian] = useState("");
@@ -28,7 +28,7 @@ export default function RiwayatPenilaian() {
   });
 
   const handleEdit = (e, id) => {
-    e.stopPropagation(); // supaya tidak sekalian trigger buka detail
+    e.stopPropagation();
     const berhasil = mulaiEditPenilaian(id);
     if (berhasil) {
       navigate("/penilaian");
@@ -36,7 +36,8 @@ export default function RiwayatPenilaian() {
       alert("Gagal memuat data untuk diedit. Coba refresh halaman.");
     }
   };
-    const handleHapus = async (e, id, namaPeserta) => {
+
+  const handleHapus = async (e, id, namaPeserta) => {
     e.stopPropagation();
     const konfirmasi = window.confirm(
       `Yakin mau hapus riwayat penilaian ${namaPeserta}? Data yang sudah dihapus tidak bisa dikembalikan.`
@@ -75,89 +76,144 @@ export default function RiwayatPenilaian() {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-neutral-400 border-b">
-              <th className="px-5 py-3 font-medium">Nama Peserta</th>
-              <th className="px-5 py-3 font-medium">Tanggal</th>
-              <th className="px-5 py-3 font-medium">Nilai</th>
-              <th className="px-5 py-3 font-medium">Status</th>
-              <th className="px-5 py-3 font-medium">Persetujuan</th>
-              <th className="px-5 py-3 font-medium"></th>
-              <th className="px-5 py-3 font-medium"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {hasilFilter.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={6}
-                  className="px-5 py-8 text-center text-neutral-400"
-                >
-                  Belum ada data penilaian.
-                </td>
-              </tr>
-            ) : (
-              hasilFilter.map((item) => (
-                <tr
-                  key={item.id}
-                  onClick={() => navigate(`/detail-penilaian/${item.id}`)}
-                  className="border-b last:border-0 cursor-pointer hover:bg-sky-50 transition-colors"
-                >
-                  <td className="px-5 py-3 font-medium text-sky-800 hover:underline">
+      {hasilFilter.length === 0 ? (
+        <div className="bg-white rounded-xl border p-8 text-center text-neutral-400 text-sm">
+          Belum ada data penilaian.
+        </div>
+      ) : (
+        <>
+          {/* Tampilan KARTU, cuma muncul di layar kecil (mobile) */}
+          <div className="md:hidden space-y-3">
+            {hasilFilter.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => navigate(`/detail-penilaian/${item.id}`)}
+                className="bg-white rounded-xl border p-4 active:bg-sky-50"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-medium text-sky-800">
                     {item.peserta.nama}
-                  </td>
-                  <td className="px-5 py-3 text-neutral-500">
-                    {item.peserta.tanggal}
-                  </td>
-                  <td className="px-5 py-3 text-neutral-700">
+                  </p>
+                  <p className="text-lg font-bold text-neutral-700">
                     {item.hasil.persentase}
-                  </td>
-                  <td className="px-5 py-3">
-                    <span
-                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColor(
-                        item.hasil.status
-                      )}`}
-                    >
-                      {item.hasil.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3">
-                    <span
-                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                        statusApprovalColor[item.status]
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3">
-                    {role === "supervisor" && item.status === "Ditolak" && (
+                  </p>
+                </div>
+                <p className="text-xs text-neutral-400 mb-3">
+                  {item.peserta.tanggal}
+                </p>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span
+                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColor(
+                      item.hasil.status
+                    )}`}
+                  >
+                    {item.hasil.status}
+                  </span>
+                  <span
+                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                      statusApprovalColor[item.status]
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+                {role === "supervisor" && (
+                  <div className="flex gap-2 pt-2 border-t">
+                    {item.status === "Ditolak" && (
                       <button
                         onClick={(e) => handleEdit(e, item.id)}
-                        className="text-xs font-medium px-3 py-1.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white"
+                        className="flex-1 text-xs font-medium px-3 py-2 rounded-lg bg-sky-800 text-white"
                       >
                         Edit & Ajukan Ulang
                       </button>
                     )}
-                  </td>
-                  <td className="px-5 py-3">
-                    {role === "supervisor" && (
-                      <button
-                        onClick={(e) => handleHapus(e, item.id, item.peserta.nama)}
-                        className="text-xs font-medium px-3 py-1.5 rounded-lg border border-red-300 text-red-600 hover:bg-red-50"
-                      >
-                        Hapus
-                      </button>
-                    )}
-                  </td>
+                    <button
+                      onClick={(e) => handleHapus(e, item.id, item.peserta.nama)}
+                      className="flex-1 text-xs font-medium px-3 py-2 rounded-lg border border-red-300 text-red-600"
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Tampilan TABEL, cuma muncul di layar md ke atas (desktop) */}
+          <div className="hidden md:block bg-white rounded-xl border overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-neutral-400 border-b">
+                  <th className="px-5 py-3 font-medium">Nama Peserta</th>
+                  <th className="px-5 py-3 font-medium">Tanggal</th>
+                  <th className="px-5 py-3 font-medium">Nilai</th>
+                  <th className="px-5 py-3 font-medium">Status</th>
+                  <th className="px-5 py-3 font-medium">Persetujuan</th>
+                  <th className="px-5 py-3 font-medium"></th>
+                  <th className="px-5 py-3 font-medium"></th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {hasilFilter.map((item) => (
+                  <tr
+                    key={item.id}
+                    onClick={() => navigate(`/detail-penilaian/${item.id}`)}
+                    className="border-b last:border-0 cursor-pointer hover:bg-sky-50 transition-colors"
+                  >
+                    <td className="px-5 py-3 font-medium text-sky-800 hover:underline">
+                      {item.peserta.nama}
+                    </td>
+                    <td className="px-5 py-3 text-neutral-500">
+                      {item.peserta.tanggal}
+                    </td>
+                    <td className="px-5 py-3 text-neutral-700">
+                      {item.hasil.persentase}
+                    </td>
+                    <td className="px-5 py-3">
+                      <span
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColor(
+                          item.hasil.status
+                        )}`}
+                      >
+                        {item.hasil.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3">
+                      <span
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                          statusApprovalColor[item.status]
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3">
+                      {role === "supervisor" && item.status === "Ditolak" && (
+                        <button
+                          onClick={(e) => handleEdit(e, item.id)}
+                          className="text-xs font-medium px-3 py-1.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white"
+                        >
+                          Edit & Ajukan Ulang
+                        </button>
+                      )}
+                    </td>
+                    <td className="px-5 py-3">
+                      {role === "supervisor" && (
+                        <button
+                          onClick={(e) => handleHapus(e, item.id, item.peserta.nama)}
+                          className="text-xs font-medium px-3 py-1.5 rounded-lg border border-red-300 text-red-600 hover:bg-red-50"
+                        >
+                          Hapus
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 }

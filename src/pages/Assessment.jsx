@@ -47,7 +47,7 @@ export default function Assessment() {
   };
 
   return (
-    <div className="max-w-3xl pb-28">
+    <div className="max-w-3xl pb-36 md:pb-28">
       <div className="mb-4">
         <h1 className="text-lg font-semibold text-sky-900">
           Assessment Making Bed
@@ -57,7 +57,7 @@ export default function Assessment() {
         </p>
       </div>
 
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4">
         <div className="flex-1 h-2 bg-neutral-200 rounded-full overflow-hidden">
           <div
             className="h-full bg-sky-700 transition-all"
@@ -68,10 +68,16 @@ export default function Assessment() {
           {totalTerisi} / {totalAspek} Aspek
         </span>
       </div>
-            <div className="flex items-center gap-4 mb-6 bg-white rounded-lg border px-4 py-3 flex-wrap">
-        <span className="text-xs text-neutral-400">Keterangan skor:</span>
+
+      <div className="flex items-center gap-3 mb-6 bg-white rounded-lg border px-4 py-3 flex-wrap">
+        <span className="text-xs text-neutral-400 w-full sm:w-auto">
+          Keterangan skor:
+        </span>
         {[4, 3, 2, 1].map((nilai) => (
-          <span key={nilai} className="flex items-center gap-1.5 text-xs text-neutral-600">
+          <span
+            key={nilai}
+            className="flex items-center gap-1.5 text-xs text-neutral-600"
+          >
             <span className="h-5 w-5 rounded-md bg-sky-700 text-white flex items-center justify-center font-semibold text-[11px]">
               {nilai}
             </span>
@@ -93,7 +99,7 @@ export default function Assessment() {
                 return (
                   <div
                     key={aspek.id}
-                    className="p-4 flex items-center justify-between gap-4"
+                    className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-neutral-700">
@@ -103,13 +109,13 @@ export default function Assessment() {
                         {aspek.deskripsi}
                       </p>
                     </div>
-                    <div className="flex gap-1.5 shrink-0">
+                    <div className="grid grid-cols-4 sm:flex gap-1.5 shrink-0">
                       {[1, 2, 3, 4].map((nilai) => (
                         <button
                           key={nilai}
                           onClick={() => handlePilihSkor(aspek.id, nilai)}
                           title={skorLabel[nilai]}
-                          className={`h-9 w-9 rounded-lg border-2 text-sm font-semibold transition-colors ${
+                          className={`h-10 sm:h-9 w-full sm:w-9 rounded-lg border-2 text-sm font-semibold transition-colors ${
                             skorTerpilih === nilai
                               ? "border-sky-700 bg-sky-700 text-white"
                               : "border-neutral-200 text-neutral-600 hover:border-sky-300"
@@ -127,40 +133,42 @@ export default function Assessment() {
       ))}
 
       {/* Bar total skor & submit, selalu terlihat di bawah */}
-      <div className="fixed bottom-0 left-0 md:left-60 right-0 bg-white border-t shadow-lg px-6 py-4 flex items-center justify-between z-30">
-        <div className="flex items-center gap-6">
-          <div>
-            <p className="text-xs text-neutral-400">Total Skor</p>
-            <p className="text-lg font-bold text-sky-900">
-              {hasil.totalSkor} / {hasil.maksimalSkor}
-            </p>
+      <div className="fixed bottom-0 left-0 md:left-60 right-0 bg-white border-t shadow-lg px-4 md:px-6 py-3 md:py-4 z-30">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-4 md:gap-6 overflow-x-auto">
+            <div className="shrink-0">
+              <p className="text-xs text-neutral-400">Total Skor</p>
+              <p className="text-base md:text-lg font-bold text-sky-900">
+                {hasil.totalSkor} / {hasil.maksimalSkor}
+              </p>
+            </div>
+            <div className="shrink-0">
+              <p className="text-xs text-neutral-400">Nilai Akhir</p>
+              <p className="text-base md:text-lg font-bold text-sky-900">
+                {hasil.persentase}
+              </p>
+            </div>
+            {totalTerisi > 0 && (
+              <span
+                className={`shrink-0 text-xs font-medium px-3 py-1.5 rounded-full ${
+                  hasil.status === "Kompeten"
+                    ? "bg-emerald-100 text-emerald-700"
+                    : hasil.status === "Belum Kompeten"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {hasil.status}
+              </span>
+            )}
           </div>
-          <div>
-            <p className="text-xs text-neutral-400">Nilai Akhir</p>
-            <p className="text-lg font-bold text-sky-900">
-              {hasil.persentase}
-            </p>
-          </div>
-          {totalTerisi > 0 && (
-            <span
-              className={`text-xs font-medium px-3 py-1.5 rounded-full ${
-                hasil.status === "Kompeten"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : hasil.status === "Belum Kompeten"
-                  ? "bg-yellow-100 text-yellow-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {hasil.status}
-            </span>
-          )}
+          <button
+            onClick={handleLanjut}
+            className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium"
+          >
+            Lanjut ke Review →
+          </button>
         </div>
-        <button
-          onClick={handleLanjut}
-          className="px-6 py-2.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium"
-        >
-          Lanjut ke Review →
-        </button>
       </div>
     </div>
   );
