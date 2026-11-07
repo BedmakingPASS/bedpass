@@ -14,6 +14,14 @@ export default function TambahPeserta() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sukses, setSukses] = useState(null);
+    const [disalin, setDisalin] = useState(null);
+
+  const handleSalin = (username, password) => {
+    const teks = `Username: ${username}\nPassword: ${password}`;
+    navigator.clipboard.writeText(teks);
+    setDisalin(true);
+    setTimeout(() => setDisalin(null), 1500);
+  };
 
   // Auto-generate username & password sederhana dari nama depan
   const handleNamaChange = (value) => {
@@ -62,18 +70,40 @@ export default function TambahPeserta() {
         penilaiannya sendiri.
       </p>
 
+      {/* Popup sukses tambah peserta */}
       {sukses && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
-          <p className="text-sm font-medium text-emerald-800 mb-2">
-            Peserta "{sukses.nama}" berhasil ditambahkan!
-          </p>
-          <p className="text-xs text-emerald-700">
-            Username: <strong>{sukses.username}</strong> · Password:{" "}
-            <strong>{sukses.password}</strong>
-          </p>
-          <p className="text-xs text-emerald-600 mt-1">
-            Catat/screenshot info ini untuk diberikan ke peserta.
-          </p>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-lg">
+            <p className="text-base font-semibold text-emerald-800 mb-1">
+              Peserta Berhasil Ditambahkan!
+            </p>
+            <p className="text-sm text-neutral-600 mb-4">
+              "{sukses.nama}" sudah terdaftar. Bagikan info login ini ke peserta.
+            </p>
+
+            <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-4 mb-4">
+              <p className="text-sm text-neutral-700">
+                Username: <strong>{sukses.username}</strong>
+              </p>
+              <p className="text-sm text-neutral-700 mt-1">
+                Password: <strong>{sukses.password}</strong>
+              </p>
+            </div>
+
+            <button
+              onClick={() => handleSalin(sukses.username, sukses.password)}
+              className="w-full bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium py-2.5 rounded-lg mb-3"
+            >
+              {disalin ? "Tersalin!" : "Salin Username & Password"}
+            </button>
+
+            <button
+              onClick={() => setSukses(null)}
+              className="w-full bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-sm font-medium py-2.5 rounded-lg"
+            >
+              Tutup
+            </button>
+          </div>
         </div>
       )}
 

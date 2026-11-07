@@ -10,14 +10,32 @@ export default function PesertaMagang() {
   const { role } = useAuth();
   const navigate = useNavigate();
   const [pencarian, setPencarian] = useState("");
+  const [urutan, setUrutan] = useState("abjad");
 
   const getPenilaianTerakhir = (namaPeserta) => {
     return riwayatPenilaian.find((item) => item.peserta.nama === namaPeserta);
   };
 
-  const hasilFilter = daftarPeserta.filter((p) =>
-    p.nama.toLowerCase().includes(pencarian.toLowerCase())
-  );
+  const hasilFilter = daftarPeserta
+    .filter((p) => p.nama.toLowerCase().includes(pencarian.toLowerCase()))
+    .sort((a, b) => {
+      if (urutan === "abjad") {
+        return a.nama.localeCompare(b.nama);
+      }
+      if (urutan === "terakhir-dinilai") {
+        const penilaianA = getPenilaianTerakhir(a.nama);
+        const penilaianB = getPenilaianTerakhir(b.nama);
+        // Peserta yang belum pernah dinilai ditaruh paling bawah
+        if (!penilaianA && !penilaianB) return 0;
+        if (!penilaianA) return 1;
+        if (!penilaianB) return -1;
+        return (
+          new Date(penilaianB.peserta.tanggal.split("/").reverse().join("-")) -
+          new Date(penilaianA.peserta.tanggal.split("/").reverse().join("-"))
+        );
+      }
+      return 0;
+    });
 
   const handleHapus = async (e, peserta) => {
     e.stopPropagation();
@@ -46,13 +64,23 @@ export default function PesertaMagang() {
         Daftar seluruh peserta magang yang terdaftar dalam sistem.
       </p>
 
-      <input
-        type="text"
-        value={pencarian}
-        onChange={(e) => setPencarian(e.target.value)}
-        placeholder="Cari nama peserta..."
-        className="w-full max-w-sm rounded-lg border border-neutral-300 px-4 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-sky-700"
-      />
+      <div className="flex flex-wrap gap-3 mb-4">
+        <input
+          type="text"
+          value={pencarian}
+          onChange={(e) => setPencarian(e.target.value)}
+          placeholder="Cari nama peserta..."
+          className="flex-1 min-w-[200px] rounded-lg border border-neutral-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-700"
+        />
+        <select
+          value={urutan}
+          onChange={(e) => setUrutan(e.target.value)}
+          className="rounded-lg border border-neutral-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-700"
+        >
+          <option value="abjad">Urutkan: A-Z</option>
+          <option value="terakhir-dinilai">Urutkan: Terakhir Dinilai</option>
+        </select>
+      </div>
 
       {hasilFilter.length === 0 ? (
         <div className="bg-white rounded-xl border p-8 text-center text-neutral-400 text-sm">

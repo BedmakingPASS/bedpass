@@ -48,7 +48,6 @@ export function generateHasilPenilaianPdf(data, konversi) {
     ["Nama Peserta Magang", data.peserta.nama],
     ["Instansi", data.peserta.instansi],
     ["Nama Penilai", data.peserta.penilai],
-    ["Tanggal Penilaian", data.peserta.tanggal],
   ];
   identitas.forEach(([label, value]) => {
     doc.setFont("times", "bold");
@@ -104,7 +103,7 @@ export function generateHasilPenilaianPdf(data, konversi) {
 
   autoTable(doc, {
     startY: y,
-    head: [["No", "Kategori", "Aspek", "Skor", "Label"]],
+    head: [["No", "Kategori", "Aspek", "Skor", "Keterangan"]],
     body: rows,
     styles: { font: "times", fontSize: 9, cellPadding: 2.5, fontStyle: "normal" },
     headStyles: { font: "times", fontStyle: "bold", fillColor: [12, 74, 110], fontSize: 9 },
@@ -153,13 +152,10 @@ export function generateHasilPenilaianPdf(data, konversi) {
    doc.setFontSize(9);
   doc.setFont("times", "normal");
   doc.text("Bandung, " + today, pageWidth - 70, y);
-  doc.text("Bandung, " + today, 14, y);
   y += 6;
-  doc.text("Peserta Magang,", 14, y);
-  doc.text("Penilai,", pageWidth - 70, y);
+  doc.text("Pembimbing Eksternal,", pageWidth - 70, y);
   y += 25;
-  doc.text("" + data.peserta.nama + "", 14, y);
-  doc.text("Letty Latifah SE, MM Par", pageWidth - 70, y);
+  doc.text("Lety Latifah, S.E., M.M.Par", pageWidth - 70, y);
 
   const namaFile =
     "Hasil_Penilaian_" +

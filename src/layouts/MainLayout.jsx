@@ -17,8 +17,8 @@ const MENU_BY_ROLE = {
   ],
   supervisor: [
     { label: "Dashboard", path: "/dashboard" },
-    { label: "Penilaian", path: "/data-peserta-magang" },
     { label: "Peserta Magang", path: "/peserta" },
+    { label: "Penilaian", path: "/data-peserta-magang" },
     { label: "Riwayat Penilaian", path: "/riwayat" },
     { label: "Rekap Nilai", path: "/rekap" },
     { label: "Feedback Peserta", path: "/feedback-peserta" },
@@ -118,7 +118,7 @@ export default function MainLayout() {
 
           <div className="flex items-center gap-3">
             <span className="text-sm text-neutral-500 hidden sm:inline">
-              {roleLabels[role]}
+              {role === "trainee" ? user?.name : roleLabels[role]}
             </span>
             <div className="h-9 w-9 rounded-full bg-sky-700 text-white flex items-center justify-center text-sm font-semibold shrink-0">
               {user?.name?.charAt(0)}
