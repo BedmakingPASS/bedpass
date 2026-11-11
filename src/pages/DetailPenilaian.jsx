@@ -1,4 +1,5 @@
 // src/pages/DetailPenilaian.jsx
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAssessment } from "../context/AssessmentContext";
 import { useAuth } from "../context/AuthContext";
@@ -38,6 +39,11 @@ export default function DetailPenilaian() {
   const { role } = useAuth();
   const { riwayatPenilaian, updateStatusPenilaian } = useAssessment();
 
+  const [showTolak, setShowTolak] = useState(false);
+  const [alasan, setAlasan] = useState("");
+  const [errorAlasan, setErrorAlasan] = useState("");
+  const [loadingTolak, setLoadingTolak] = useState(false);
+
   const data = riwayatPenilaian.find((item) => String(item.id) === String(id));
 
   if (!data) {
@@ -71,9 +77,21 @@ export default function DetailPenilaian() {
     navigate("/persetujuan");
   };
 
-  const handleReject = async () => {
-    await updateStatusPenilaian(data.id, "Ditolak");
-    navigate("/persetujuan");
+  const handleReject = () => {
+    setAlasan("");
+    setErrorAlasan("");
+    setShowTolak(true);
+  };
+
+  const handleConfirmReject = async () => {
+    if (alasan.trim().length < 10) {
+      setErrorAlasan("Alasan penolakan wajib diisi (minimal 10 karakter).");
+      return;
+    }
+    setLoadingTolak(true);
+    const berhasil = await updateStatusPenilaian(data.id, "Ditolak", alasan.trim());
+    setLoadingTolak(false);
+    if (berhasil) navigate("/persetujuan");
   };
 
   const handleDownloadPdf = () => {
@@ -226,6 +244,17 @@ export default function DetailPenilaian() {
           );
         })}
       </div>
+      {data.status === "Ditolak" && data.alasan_penolakan && (
+  <div className="bg-red-50 border border-red-200 rounded-xl p-5 mb-6">
+    <p className="text-sm font-semibold text-red-700 mb-1">
+      Alasan Penolakan GM (perlu direvisi)
+    </p>
+    <p className="text-sm text-red-600 whitespace-pre-line">
+      {data.alasan_penolakan}
+    </p>
+  </div>
+)}
+
 
       {/* Tombol Setujui/Tolak: hanya muncul untuk GM saat status masih menunggu */}
       {bisaMemprosesPersetujuan && (
@@ -246,6 +275,97 @@ export default function DetailPenilaian() {
             >
               Setujui
             </button>
+          </div>
+        </div>
+      )}
+      {showTolak && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-xl p-6 w-full max-w-md">
+      <h3 className="text-lg font-semibold text-sky-900 mb-1">
+        Tolak Hasil Penilaian
+      </h3>
+      <p className="text-sm text-neutral-500 mb-4">
+        Jelaskan bagian yang perlu diperbaiki oleh Supervisor.
+      </p>
+
+      <label className="text-sm font-medium text-neutral-700">
+        Alasan penolakan <span className="text-red-500">*</span>
+      </label>
+      <textarea
+        rows={4}
+        value={alasan}
+        onChange={(e) => {
+          setAlasan(e.target.value);
+          setErrorAlasan("");
+        }}
+        placeholder="Contoh: Skor aspek 08 terlalu tinggi, mohon dicek ulang..."
+        className="w-full mt-1 border rounded-lg p-3 text-sm outline-none focus:border-sky-600"
+      />
+      {errorAlasan && (
+        <p className="text-sm text-red-600 mt-1">{errorAlasan}</p>
+      )}
+
+      <div className="flex justify-end gap-3 mt-4">
+        <button
+          onClick={() => setShowTolak(false)}
+          className="px-4 py-2 rounded-lg border text-sm"
+        >
+          Batal
+        </button>
+        <button
+          onClick={handleConfirmReject}
+          disabled={loadingTolak}
+          className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium disabled:opacity-60"
+        >
+          {loadingTolak ? "Menyimpan..." : "Tolak Penilaian"}
+        </button>
+      </div>
+    </div>
+        </div>
+      )}
+
+      {showTolak && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-sky-900 mb-1">
+              Tolak Hasil Penilaian
+            </h3>
+            <p className="text-sm text-neutral-500 mb-4">
+              Jelaskan bagian yang perlu diperbaiki oleh Supervisor.
+            </p>
+
+            <label className="text-sm font-medium text-neutral-700">
+              Alasan penolakan <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              rows={4}
+              value={alasan}
+              onChange={(e) => {
+                setAlasan(e.target.value);
+                setErrorAlasan("");
+              }}
+              placeholder="Contoh: Skor aspek 08 terlalu tinggi, mohon dicek ulang..."
+              className="w-full mt-1 border rounded-lg p-3 text-sm outline-none focus:border-sky-600"
+            />
+            {errorAlasan && (
+              <p className="text-sm text-red-600 mt-1">{errorAlasan}</p>
+            )}
+
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => setShowTolak(false)}
+                className="px-4 py-2 rounded-lg border text-sm"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleConfirmReject}
+                disabled={loadingTolak}
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium disabled:opacity-60"
+              >
+                {loadingTolak ? "Menyimpan..." : "Tolak Penilaian"}
+              </button>
+            </div>
           </div>
         </div>
       )}

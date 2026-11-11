@@ -73,7 +73,7 @@ export default function Assessment() {
         <span className="text-xs text-neutral-400 w-full sm:w-auto">
           Keterangan skor:
         </span>
-        {[4, 3, 2, 1].map((nilai) => (
+        {[1, 2, 3, 4].map((nilai) => (
           <span
             key={nilai}
             className="flex items-center gap-1.5 text-xs text-neutral-600"

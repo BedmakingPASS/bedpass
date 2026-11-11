@@ -57,6 +57,8 @@ export function AssessmentProvider({ children }) {
       },
       status: row.status_persetujuan,
       catatan_umum: row.catatan_umum,
+      alasan_penolakan: row.alasan_penolakan,
+      revisi_ke: row.revisi_ke,
     }));
 
     setRiwayatPenilaian(formatted);
@@ -162,9 +164,12 @@ export function AssessmentProvider({ children }) {
 
     let result;
     if (editingId) {
+      const lama = riwayatPenilaian.find(
+        (item) => String(item.id) === String(editingId)
+      );
       result = await supabase
         .from("penilaian")
-        .update(payload)
+        .update({ ...payload, revisi_ke: (lama?.revisi_ke || 0) + 1 })
         .eq("id", editingId)
         .select();
     } else {
@@ -184,19 +189,27 @@ export function AssessmentProvider({ children }) {
     return data[0];
   };
 
-  const updateStatusPenilaian = async (id, statusBaru) => {
+  const updateStatusPenilaian = async (id, statusBaru, alasan = null) => {
+    const updateData = { status_persetujuan: statusBaru };
+
+    if (statusBaru === "Ditolak") {
+      updateData.alasan_penolakan = alasan;
+      updateData.ditolak_pada = new Date().toISOString();
+    }
+
     const { error } = await supabase
       .from("penilaian")
-      .update({ status_persetujuan: statusBaru })
+      .update(updateData)
       .eq("id", id);
 
     if (error) {
       console.error("Gagal update status:", error.message);
       alert("Gagal update status: " + error.message);
-      return;
+      return false;
     }
 
     await ambilRiwayatPenilaian();
+    return true;
   };
     const hapusPenilaian = async (id) => {
     const { error } = await supabase.from("penilaian").delete().eq("id", id);
