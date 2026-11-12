@@ -13,7 +13,9 @@ export default function PesertaMagang() {
   const [urutan, setUrutan] = useState("abjad");
 
   const getPenilaianTerakhir = (namaPeserta) => {
-    return riwayatPenilaian.find((item) => item.peserta.nama === namaPeserta);
+    return riwayatPenilaian.find(
+      (item) => item.peserta.nama === namaPeserta && item.status === "Disetujui"
+    );
   };
 
   const hasilFilter = daftarPeserta
