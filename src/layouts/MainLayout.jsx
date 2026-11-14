@@ -12,21 +12,22 @@ const MENU_BY_ROLE = {
     { label: "Persetujuan Penilaian", path: "/persetujuan" },
     { label: "Peserta Magang", path: "/peserta" },
     { label: "Riwayat Penilaian", path: "/riwayat" },
-    { label: "Rekap Nilai", path: "/rekap" },
-    { label: "Feedback Peserta", path: "/feedback-peserta" },
+    { label: "Rekap Nilai Peserta", path: "/rekap" },
+    { label: "Rekomendasi Peserta", path: "/feedback-peserta" },
   ],
   supervisor: [
     { label: "Dashboard", path: "/dashboard" },
     { label: "Peserta Magang", path: "/peserta" },
     { label: "Penilaian", path: "/data-peserta-magang" },
     { label: "Riwayat Penilaian", path: "/riwayat" },
-    { label: "Rekap Nilai", path: "/rekap" },
-    { label: "Feedback Peserta", path: "/feedback-peserta" },
+    { label: "Rekap Nilai Peserta", path: "/rekap" },
+    { label: "Rekomendasi Peserta", path: "/feedback-peserta" },
   ],
   trainee: [
     { label: "Dashboard", path: "/dashboard" },
-    { label: "Hasil Penilaian Saya", path: "/hasil-saya" },
-    { label: "Feedback untuk Hotel", path: "/feedback-saya" },
+    { label: "Biodata", path: "/biodata-saya" },
+    { label: "Hasil Penilaian", path: "/hasil-saya" },
+        { label: "Rekomendasi", path: "/feedback-saya" },
   ],
 };
 

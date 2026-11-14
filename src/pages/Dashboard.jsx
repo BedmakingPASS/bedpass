@@ -4,18 +4,43 @@ import { useAuth } from "../context/AuthContext";
 import { statusColor } from "../data/mockAssessments";
 import { useAssessment } from "../context/AssessmentContext";
 
+const statusApprovalColor = {
+  "Menunggu Persetujuan": "bg-yellow-100 text-yellow-700",
+  Disetujui: "bg-emerald-100 text-emerald-700",
+  Ditolak: "bg-red-100 text-red-700",
+};
+
+// Status kompetensi hanya tampil kalau sudah Disetujui GM,
+// selain itu tampilkan status persetujuannya
+const getStatusTampil = (item) =>
+  item.status === "Disetujui" ? item.hasil.status : item.status;
+
+const getWarnaStatus = (item) =>
+  item.status === "Disetujui"
+    ? statusColor(item.hasil.status)
+    : statusApprovalColor[item.status];
+
+// Rata-rata hanya dari penilaian yang sudah disetujui
+const hitungRataRata = (disetujui) =>
+  disetujui.length === 0
+    ? "—"
+    : (
+        disetujui.reduce((sum, i) => sum + i.hasil.persentase, 0) /
+        disetujui.length
+      ).toFixed(1);
+
 const PANDUAN_PER_ROLE = {
   general_manager: {
-    judul: "Panduan untuk General Manager",
+    judul: "Panduan untuk Memberi Persetujuan",
     langkah: [
-      "Buka menu 'Persetujuan Penilaian' untuk meninjau hasil yang diajukan Supervisor.",
-      "Klik nama peserta untuk melihat detail lengkap sebelum menyetujui atau menolak.",
-      "Menu 'Peserta Magang' & 'Rekap Nilai' membantu memantau data secara keseluruhan.",
+      "Buka menu 'Persetujuan Penilaian' untuk meninjau hasil penilaian yang diajukan Supervisor.",
+      "Klik nama peserta untuk melihat detail lengkap hasil penilaian sebelum menyetujui atau menolak.",
+      "Menu 'Peserta Magang' & 'Rekap Nilai' membantu memantau seluruh data penilaian.",
       "Menu 'Feedback Peserta' menampilkan saran dari peserta magang untuk hotel.",
     ],
   },
   supervisor: {
-    judul: "Panduan untuk Supervisor",
+    judul: "Panduan untuk Memberi Penilaian",
     langkah: [
       "Buka menu 'Peserta Magang' lalu klik '+ Tambah Peserta' untuk mendaftarkan peserta baru.",
       "Buka menu 'Penilaian', pilih peserta, lalu isi skor 1-4 untuk setiap aspek.",
@@ -109,15 +134,15 @@ function RecentAssessmentTable({ data }) {
                   {item.peserta.tanggal}
                 </td>
                 <td className="px-5 py-3 text-neutral-700">
-                  {item.hasil.persentase}
+                  {item.status === "Disetujui" ? item.hasil.persentase : "—"}
                 </td>
                 <td className="px-5 py-3">
                   <span
-                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColor(
-                      item.hasil.status
+                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${getWarnaStatus(
+                      item
                     )}`}
                   >
-                    {item.hasil.status}
+                    {getStatusTampil(item)}
                   </span>
                 </td>
               </tr>
@@ -132,27 +157,22 @@ function RecentAssessmentTable({ data }) {
 function DashboardSupervisor({ user }) {
   const { riwayatPenilaian, daftarPeserta } = useAssessment();
 
-  const sudahDinilai = riwayatPenilaian.length;
+  const disetujui = riwayatPenilaian.filter((i) => i.status === "Disetujui");
+
+  // Peserta dianggap "sudah dinilai" kalau punya minimal 1 penilaian yang disetujui GM
+  const sudahDinilai = new Set(disetujui.map((i) => String(i.pesertaId))).size;
   const belumDinilai = Math.max(daftarPeserta.length - sudahDinilai, 0);
-  const rataRata =
-    sudahDinilai === 0
-      ? 0
-      : (
-          riwayatPenilaian.reduce((sum, i) => sum + i.hasil.persentase, 0) /
-          sudahDinilai
-        ).toFixed(1);
+  const rataRata = hitungRataRata(disetujui);
 
   return (
     <div>
-
       <div className="bg-sky-900 rounded-2xl p-6 text-white mb-6">
         <h1 className="text-xl font-semibold">Selamat Datang, {user.name}!</h1>
         <p className="text-sky-100 text-sm mt-1">
           Mari bersama mendukung kompetensi housekeeping yang lebih baik.
         </p>
       </div>
-            <PanduanBox role="supervisor" />
-
+      <PanduanBox role="supervisor" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Total Peserta" value={daftarPeserta.length} color="text-sky-800" />
@@ -172,24 +192,18 @@ function DashboardGeneralManager({ user }) {
   const menunggu = riwayatPenilaian.filter(
     (i) => i.status === "Menunggu Persetujuan"
   ).length;
-  const rataRata =
-    riwayatPenilaian.length === 0
-      ? 0
-      : (
-          riwayatPenilaian.reduce((sum, i) => sum + i.hasil.persentase, 0) /
-          riwayatPenilaian.length
-        ).toFixed(1);
+  const disetujui = riwayatPenilaian.filter((i) => i.status === "Disetujui");
+  const rataRata = hitungRataRata(disetujui);
 
   return (
     <div>
-
       <div className="bg-sky-900 rounded-2xl p-6 text-white mb-6">
         <h1 className="text-xl font-semibold">Selamat Datang, {user.name}!</h1>
         <p className="text-sky-100 text-sm mt-1">
           Tinjau dan setujui hasil penilaian yang diajukan Supervisor.
         </p>
       </div>
-    <PanduanBox role="general_manager" />
+      <PanduanBox role="general_manager" />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <StatCard label="Menunggu Persetujuan" value={menunggu} color="text-yellow-600" />
@@ -212,7 +226,7 @@ function DashboardTrainee({ user }) {
           melihat hasil kompetensi kamu.
         </p>
       </div>
-          <PanduanBox role="trainee" />
+      <PanduanBox role="trainee" />
     </div>
   );
 }

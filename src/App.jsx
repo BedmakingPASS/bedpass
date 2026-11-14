@@ -21,6 +21,8 @@ import PesertaMagang from "./pages/PesertaMagang";
 import FeedbackSaya from "./pages/FeedbackSaya";
 import FeedbackPeserta from "./pages/FeedbackPeserta";
 import TambahPeserta from "./pages/TambahPeserta";
+import DetailPeserta from "./pages/DetailPeserta";
+import BiodataSaya from "./pages/BiodataSaya";
 
 
 function Unauthorized() {
@@ -58,6 +60,22 @@ export default function App() {
                 element={
                   <ProtectedRoute allowedRoles={["supervisor", "general_manager"]}>
                     <PesertaMagang />
+                  </ProtectedRoute>
+                }
+              />
+                <Route
+                path="/peserta/:id"
+                element={
+                  <ProtectedRoute allowedRoles={["supervisor", "general_manager"]}>
+                    <DetailPeserta />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/biodata-saya"
+                element={
+                  <ProtectedRoute allowedRoles={["trainee"]}>
+                    <BiodataSaya />
                   </ProtectedRoute>
                 }
               />

@@ -11,6 +11,16 @@ const statusApprovalColor = {
   Ditolak: "bg-red-100 text-red-700",
 };
 
+// Status yang ditampilkan: status kompetensi hanya kalau sudah Disetujui GM,
+// selain itu tampilkan status persetujuannya (Menunggu Persetujuan / Ditolak)
+const getStatusTampil = (item) =>
+  item.status === "Disetujui" ? item.hasil.status : item.status;
+
+const getWarnaStatus = (item) =>
+  item.status === "Disetujui"
+    ? statusColor(item.hasil.status)
+    : statusApprovalColor[item.status];
+
 export default function RiwayatPenilaian() {
   const { riwayatPenilaian, mulaiEditPenilaian, hapusPenilaian } = useAssessment();
   const { role } = useAuth();
@@ -23,7 +33,7 @@ export default function RiwayatPenilaian() {
       .toLowerCase()
       .includes(pencarian.toLowerCase());
     const cocokStatus =
-      filterStatus === "Semua" || item.hasil.status === filterStatus;
+      filterStatus === "Semua" || getStatusTampil(item) === filterStatus;
     return cocokNama && cocokStatus;
   });
 
@@ -73,6 +83,8 @@ export default function RiwayatPenilaian() {
           <option value="Kompeten">Kompeten</option>
           <option value="Belum Kompeten">Belum Kompeten</option>
           <option value="Tidak Kompeten">Tidak Kompeten</option>
+          <option value="Menunggu Persetujuan">Menunggu Persetujuan</option>
+          <option value="Ditolak">Ditolak</option>
         </select>
       </div>
 
@@ -94,27 +106,22 @@ export default function RiwayatPenilaian() {
                   <p className="text-sm font-medium text-sky-800">
                     {item.peserta.nama}
                   </p>
-                  <p className="text-lg font-bold text-neutral-700">
-                    {item.hasil.persentase}
-                  </p>
+                  {item.status === "Disetujui" && (
+                    <p className="text-lg font-bold text-neutral-700">
+                      {item.hasil.persentase}
+                    </p>
+                  )}
                 </div>
                 <p className="text-xs text-neutral-400 mb-3">
                   {item.peserta.tanggal}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-3">
                   <span
-                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColor(
-                      item.hasil.status
+                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${getWarnaStatus(
+                      item
                     )}`}
                   >
-                    {item.hasil.status}
-                  </span>
-                  <span
-                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                      statusApprovalColor[item.status]
-                    }`}
-                  >
-                    {item.status}
+                    {getStatusTampil(item)}
                   </span>
                 </div>
                 {role === "supervisor" && (
@@ -148,7 +155,6 @@ export default function RiwayatPenilaian() {
                   <th className="px-5 py-3 font-medium">Tanggal</th>
                   <th className="px-5 py-3 font-medium">Nilai</th>
                   <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 font-medium">Persetujuan</th>
                   <th className="px-5 py-3 font-medium"></th>
                   <th className="px-5 py-3 font-medium"></th>
                 </tr>
@@ -167,24 +173,15 @@ export default function RiwayatPenilaian() {
                       {item.peserta.tanggal}
                     </td>
                     <td className="px-5 py-3 text-neutral-700">
-                      {item.hasil.persentase}
+                      {item.status === "Disetujui" ? item.hasil.persentase : "—"}
                     </td>
                     <td className="px-5 py-3">
                       <span
-                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColor(
-                          item.hasil.status
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${getWarnaStatus(
+                          item
                         )}`}
                       >
-                        {item.hasil.status}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3">
-                      <span
-                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                          statusApprovalColor[item.status]
-                        }`}
-                      >
-                        {item.status}
+                        {getStatusTampil(item)}
                       </span>
                     </td>
                     <td className="px-5 py-3">

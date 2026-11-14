@@ -37,7 +37,7 @@ export default function DetailPenilaian() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { role } = useAuth();
-  const { riwayatPenilaian, updateStatusPenilaian } = useAssessment();
+    const { riwayatPenilaian, updateStatusPenilaian, mulaiEditPenilaian } = useAssessment();
 
   const [showTolak, setShowTolak] = useState(false);
   const [alasan, setAlasan] = useState("");
@@ -72,9 +72,13 @@ export default function DetailPenilaian() {
   const bisaMemprosesPersetujuan =
     role === "general_manager" && data.status === "Menunggu Persetujuan";
 
-  const handleApprove = async () => {
-    await updateStatusPenilaian(data.id, "Disetujui");
-    navigate("/persetujuan");
+  const handleEditUlang = () => {
+    const berhasil = mulaiEditPenilaian(data.id);
+    if (berhasil) {
+      navigate("/penilaian");
+    } else {
+      alert("Gagal memuat data untuk diedit. Coba refresh halaman.");
+    }
   };
 
   const handleReject = () => {
@@ -133,6 +137,27 @@ export default function DetailPenilaian() {
           </span>
         </div>
       </div>
+
+      {data.status === "Ditolak" && data.alasan_penolakan && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-5 mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-red-700 mb-1">
+              Penilaian ditolak GM. Alasan penolakan:
+            </p>
+            <p className="text-sm text-red-600 whitespace-pre-line">
+              {data.alasan_penolakan}
+            </p>
+          </div>
+          {role === "supervisor" && (
+            <button
+              onClick={handleEditUlang}
+              className="shrink-0 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium"
+            >
+              Edit & Ajukan Ulang
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Ringkasan skor */}
       <div className="bg-white rounded-xl border p-6 mb-6">
@@ -244,16 +269,6 @@ export default function DetailPenilaian() {
           );
         })}
       </div>
-      {data.status === "Ditolak" && data.alasan_penolakan && (
-  <div className="bg-red-50 border border-red-200 rounded-xl p-5 mb-6">
-    <p className="text-sm font-semibold text-red-700 mb-1">
-      Alasan Penolakan GM (perlu direvisi)
-    </p>
-    <p className="text-sm text-red-600 whitespace-pre-line">
-      {data.alasan_penolakan}
-    </p>
-  </div>
-)}
 
 
       {/* Tombol Setujui/Tolak: hanya muncul untuk GM saat status masih menunggu */}

@@ -4,27 +4,30 @@ import { useAssessment } from "../context/AssessmentContext";
 export default function RekapNilai() {
   const { riwayatPenilaian } = useAssessment();
 
-  const totalPenilaian = riwayatPenilaian.length;
-  const jumlahKompeten = riwayatPenilaian.filter(
+  // Rekap hanya menghitung penilaian yang sudah disetujui GM
+  const disetujui = riwayatPenilaian.filter((i) => i.status === "Disetujui");
+
+  const totalPenilaian = disetujui.length;
+  const jumlahKompeten = disetujui.filter(
     (i) => i.hasil.status === "Kompeten"
   ).length;
-  const jumlahBelumKompeten = riwayatPenilaian.filter(
+  const jumlahBelumKompeten = disetujui.filter(
     (i) => i.hasil.status === "Belum Kompeten"
   ).length;
-  const jumlahTidakKompeten = riwayatPenilaian.filter(
+  const jumlahTidakKompeten = disetujui.filter(
     (i) => i.hasil.status === "Tidak Kompeten"
   ).length;
 
   const rataRata =
     totalPenilaian === 0
-      ? 0
+      ? "—"
       : (
-          riwayatPenilaian.reduce((sum, i) => sum + i.hasil.persentase, 0) /
+          disetujui.reduce((sum, i) => sum + i.hasil.persentase, 0) /
           totalPenilaian
         ).toFixed(1);
 
   const rekapPerPeserta = {};
-  riwayatPenilaian.forEach((item) => {
+  disetujui.forEach((item) => {
     const nama = item.peserta.nama;
     if (!rekapPerPeserta[nama]) {
       rekapPerPeserta[nama] = { nilai: [], instansi: item.peserta.instansi };
@@ -47,7 +50,7 @@ export default function RekapNilai() {
         Rekap Nilai
       </h1>
       <p className="text-neutral-500 text-sm mb-6">
-        Ringkasan statistik seluruh hasil penilaian.
+        Ringkasan statistik hasil penilaian yang sudah disetujui GM.
       </p>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -84,7 +87,7 @@ export default function RekapNilai() {
 
       {daftarRekap.length === 0 ? (
         <div className="bg-white rounded-xl border p-8 text-center text-neutral-400 text-sm">
-          Belum ada data.
+          Belum ada penilaian yang disetujui.
         </div>
       ) : (
         <>

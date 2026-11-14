@@ -294,7 +294,7 @@ export function AssessmentProvider({ children }) {
     // 2. Insert peserta baru
     const { data: pesertaBaru, error: errorPeserta } = await supabase
       .from("peserta")
-      .insert({ nama, instansi })
+      .insert({ nama, instansi: instansi || "" })
       .select()
       .single();
 
@@ -316,7 +316,20 @@ export function AssessmentProvider({ children }) {
     await ambilDaftarPeserta();
     return pesertaBaru;
   };
+  const simpanBiodata = async (pesertaId, biodata) => {
+    const { error } = await supabase
+      .from("peserta")
+      .update({ ...biodata, biodata_diisi_pada: new Date().toISOString() })
+      .eq("id", pesertaId);
 
+    if (error) {
+      console.error("Gagal menyimpan biodata:", error.message);
+      return { ok: false, pesan: error.message };
+    }
+
+    await ambilDaftarPeserta();
+    return { ok: true };
+  };
   const value = {
     pesertaTerpilih,
     currentIndex,
@@ -339,7 +352,8 @@ export function AssessmentProvider({ children }) {
     hapusPeserta,
     daftarFeedback,
     simpanFeedback,
-    tambahPeserta,
+       tambahPeserta,
+    simpanBiodata,
   };
 
   return (

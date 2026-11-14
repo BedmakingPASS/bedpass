@@ -38,11 +38,11 @@ export default function FeedbackSaya() {
   return (
     <div className="max-w-2xl">
       <h1 className="text-xl font-semibold text-sky-900 mb-1">
-        Feedback untuk Hotel
+        Rekomendasi untuk Hotel
       </h1>
       <p className="text-neutral-500 text-sm mb-6">
-        Bagikan saran atau rekomendasi kamu untuk perbaikan hotel ke depannya.
-        Feedback ini bersifat opsional dan bisa diubah kapan saja.
+        Bagikan rekomendasi atau saran kamu untuk perbaikan hotel ke depannya.
+        Rekomendasi ini bersifat opsional dan bisa diubah kapan saja.
       </p>
 
       <div className="bg-white rounded-xl border p-6">
@@ -61,20 +61,19 @@ export default function FeedbackSaya() {
                   onClick={() => setIsEditing(true)}
                   className="px-5 py-2.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium"
                 >
-                  Edit Feedback
+                  Edit Rekomendasi
                 </button>
               </>
             ) : (
               <>
                 <p className="text-sm text-neutral-500 mb-4">
-                  Kamu belum memberikan feedback. Yuk, bagikan saran atau
-                  rekomendasi kamu untuk hotel!
+                  Kamu belum memberikan rekomendasi.
                 </p>
                 <button
                   onClick={() => setIsEditing(true)}
                   className="px-5 py-2.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium"
                 >
-                  Isi Feedback
+                  Isi Rekomendasi
                 </button>
               </>
             )}
@@ -82,13 +81,12 @@ export default function FeedbackSaya() {
         ) : (
           <>
             <label className="block text-sm text-neutral-600 mb-2">
-              Saran & Rekomendasi
+              Tuliskan rekomendasi di kolom ini
             </label>
             <textarea
               value={teks}
               onChange={(e) => setTeks(e.target.value)}
               rows={6}
-              placeholder="Contoh: Menurut saya, pelatihan tentang teknik mitered corner bisa ditambah durasinya karena masih banyak peserta yang kesulitan..."
               className="w-full rounded-lg border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-700"
             />
             <div className="flex gap-3 mt-4">
@@ -106,7 +104,7 @@ export default function FeedbackSaya() {
                 disabled={saving}
                 className="px-5 py-2.5 rounded-lg bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium disabled:opacity-60"
               >
-                {saving ? "Menyimpan..." : "Simpan Feedback"}
+                {saving ? "Menyimpan..." : "Kirim"}
               </button>
             </div>
           </>
