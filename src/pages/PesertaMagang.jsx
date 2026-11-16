@@ -28,7 +28,7 @@ export default function PesertaMagang() {
     <div>
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-xl font-semibold text-sky-900">Peserta Magang</h1>
-        {role === "supervisor" && (
+        {(role === "supervisor" || role === "general_manager") && (
           <button
             onClick={() => navigate("/tambah-peserta")}
             className="px-4 py-2 rounded-lg bg-sky-800 hover:bg-sky-900 text-white text-sm font-medium"

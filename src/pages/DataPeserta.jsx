@@ -52,21 +52,6 @@ export default function DataPeserta() {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm text-neutral-600 mb-1">
-            Instansi Peserta Magang
-          </label>
-          <input
-            type="text"
-            readOnly
-            value={
-                            daftarPeserta.find((p) => p.id === Number(pesertaId))?.instansi ||
-              ""
-            }
-            placeholder="Otomatis terisi setelah pilih peserta"
-            className="w-full rounded-lg border border-neutral-300 px-4 py-2.5 text-sm bg-neutral-50 text-neutral-500"
-          />
-        </div>
 
         <div>
           <label className="block text-sm text-neutral-600 mb-1">

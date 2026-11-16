@@ -13,7 +13,7 @@ const RINGKASAN_PER_ROLE = {
   },
   trainee: {
     judul: "Selamat datang!",
-    isi: "Di sini kamu bisa melihat hasil penilaian kompetensi kamu dan memberikan feedback untuk hotel. Cek menu 'Hasil Penilaian Saya' untuk mulai.",
+    isi: "Di sini kamu bisa melihat hasil penilaian kompetensi kamu dan memberikan rekomendasi untuk hotel.",
   },
 };
 

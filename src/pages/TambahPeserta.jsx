@@ -128,8 +128,7 @@ export default function TambahPeserta() {
           </div>
 
           <p className="text-xs text-neutral-500 mb-5">
-            Setelah login, peserta mengisi biodata sendiri di menu Biodata
-            Saya, termasuk asal sekolah / instansi.
+            Setelah peserta berhasil login, arahkan untuk mengisi biodata sendiri di menu 'Biodata'.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -197,9 +196,8 @@ export default function TambahPeserta() {
         </div>
 
         <p className="text-xs text-neutral-400 mt-2">
-          Username & password otomatis terisi dari nama depan, tapi boleh
-          diubah manual kalau perlu. Asal sekolah / instansi nanti diisi sendiri
-          oleh peserta saat melengkapi biodata.
+          Username & password peserta otomatis terisi dari nama depan, tapi bisa
+          diubah manual jika perlu.
         </p>
 
         {error && (

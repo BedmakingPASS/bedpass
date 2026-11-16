@@ -159,7 +159,7 @@ export default function App() {
                             <Route
                 path="/tambah-peserta"
                 element={
-                  <ProtectedRoute allowedRoles={["supervisor"]}>
+                  <ProtectedRoute allowedRoles={["supervisor", "general_manager"]}>
                     <TambahPeserta />
                   </ProtectedRoute>
                 }
